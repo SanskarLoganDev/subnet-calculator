@@ -1,5 +1,6 @@
 from textual import on
 from textual.app import App, ComposeResult
+from textual.containers import ScrollableContainer
 from textual.widgets import Footer, Header, Static, Input, Label, Button
 from textual.binding import Binding
 
@@ -8,7 +9,9 @@ from subnet import Calculator
 class CalculatorInputs(Static):
     
     def compose(self):
-        yield Input(placeholder="Enter IP Address: 0.0.0.0", id="ip")
+        yield Label("Enter IP Address")
+        yield Input(placeholder="0.0.0.0", id="ip")
+        yield Label("Enter Subnet Mask")
         yield Input(placeholder="Enter Subnet Mask: 32", id="mask")
         # Here you can add input fields for IP and mask, e.g., TextInput widgets
         
@@ -19,9 +22,10 @@ class CalculatorInputs(Static):
         
         ip_input = self.query_one("#ip",Input)
         ip_address = ip_input.value.strip()
-        print(f"IP Address: {ip_address}")
+
         mask_input = self.query_one("#mask",Input)
         subnet_mask = mask_input.value.strip()
+        
         if not ip_address or not subnet_mask:
             self.query_one(Static).update("Please enter both IP address and subnet mask.")
             return
@@ -46,17 +50,20 @@ class SubnetCalculator(App):
         Binding("d", "toggle_dark_mode", "Toggle Dark Mode", priority=True),
     ]
     
+    CSS_PATH = "calculator.css"
+    
     def compose(self):
         # widgets that will be used in the UI
-        self.action_toggle_dark_mode()
         yield Header(show_clock=True, name="Subnet Calculator")
+        with ScrollableContainer(): 
+            yield CalculatorInputs()
+            yield Button("Exit")
         yield Footer()
-        yield CalculatorInputs()
-        yield Button("Exit")
+        
         
     # action name must start with "action_"
     def action_toggle_dark_mode(self):
-        self.theme = "textual-dark" if self.theme == "textual-light" else "textual-light"
+        self.theme = "textual-light" if self.theme == "textual-dark" else "textual-dark"
     
     @on(Button.Pressed)
     def action_exit(self):
