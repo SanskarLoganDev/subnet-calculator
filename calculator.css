@@ -1,3 +1,11 @@
 CalculatorInputs {
     layout: vertical;
+    margin: 1;
+    padding: 1;
 }
+
+CalculatorInputs Label {
+    text-style: bold;
+    padding: 1;
+}
+
